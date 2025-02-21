@@ -2,11 +2,11 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'sanjeevkt720/jenkins-flask-app'
-        IMAGE_TAG = "${IMAGE_NAME}:${env.GIT_COMMIT}"
-        KUBECONFIG = credentials('kubeconfig-credentials-id')
-        AWS_ACCESS_KEY_ID = credentials('aws-access-key')
-        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-key')
+        IMAGE_NAME = 'mohzag/jenkins-flask-app'
+        IMAGE_TAG = "${IMAGE_NAME}:${env.BUILD_NUMBER}"
+        KUBECONFIG = credentials('vas-kubeconfig')
+        // AWS_ACCESS_KEY_ID = credentials('aws-access-key')
+        // AWS_SECRET_ACCESS_KEY = credentials('aws-secret-key')
         
     }
 
@@ -17,14 +17,17 @@ pipeline {
                 sh 'ls -la $KUBECONFIG'
                 sh 'chmod 644 $KUBECONFIG'
                 sh 'ls -la $KUBECONFIG'
-                sh "pip install -r requirements.txt"
+                sh 'kubectl config use-context vasdev01-admin@vasdev01 --kubeconfig ${KUBECONFIG}'
+                sh 'kubectl get ns'
+                sh 'kubectl create ns flask-app'
+                // sh "pip install -r requirements.txt"
             }
         }
-        stage('Test') {
-            steps {
-                sh "pytest"
-            }
-        }
+        // stage('Test') {
+        //     steps {
+        //         sh "pytest"
+        //     }
+        // }
 
         stage('Login to docker hub') {
             steps {
@@ -63,27 +66,28 @@ pipeline {
             }
         }
 
-        stage('Acceptance Test')
-        {
-            steps {
+        // stage('Acceptance Test')
+        // {
+        //     steps {
 
-                script {
+        //         script {
 
-                    def service = sh(script: "kubectl get svc flask-app-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}:{.spec.ports[0].port}'", returnStdout: true).trim()
-                    echo "${service}"
+        //             def service = sh(script: "kubectl get svc flask-app-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}:{.spec.ports[0].port}'", returnStdout: true).trim()
+        //             echo "${service}"
 
-                    sh "k6 run -e SERVICE=${service} acceptance-test.js"
-                }
-            }
-        }
-        stage('Deploy to Prod')
-        {
-            steps {
-                sh 'kubectl config use-context user@prod.us-east-1.eksctl.io'
-                sh 'kubectl config current-context'
-                sh "kubectl set image deployment/flask-app flask-app=${IMAGE_TAG}"
-            }
-        }       
+        //             sh "k6 run -e SERVICE=${service} acceptance-test.js"
+        //         }
+        //     }
+        // }
+
+        // stage('Deploy to Prod')
+        // {
+        //     steps {
+        //         sh 'kubectl config use-context user@prod.us-east-1.eksctl.io'
+        //         sh 'kubectl config current-context'
+        //         sh "kubectl set image deployment/flask-app flask-app=${IMAGE_TAG}"
+        //     }
+        // }       
 
         
     }
