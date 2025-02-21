@@ -20,6 +20,7 @@ pipeline {
                 sh 'kubectl config use-context vasdev01-admin@vasdev01 --kubeconfig ${KUBECONFIG}'
                 sh 'kubectl get ns'
                 sh 'kubectl get nodes'
+                sh 'chmod +x createNameSpace.sh'
                 sh './createNameSpace.sh flux-app'
                 // sh "pip install -r requirements.txt"
             }
