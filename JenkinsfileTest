@@ -32,42 +32,42 @@ pipeline {
         //     }
         // }
 
-        // stage('Login to docker hub') {
-        //     steps {
-        //         withCredentials([usernamePassword(credentialsId: 'docker-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-        //         sh 'echo ${PASSWORD} | docker login -u ${USERNAME} --password-stdin'}
-        //         echo 'Login successfully'
-        //     }
-        // }
+        stage('Login to docker hub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                sh 'echo ${PASSWORD} | docker login -u ${USERNAME} --password-stdin'}
+                echo 'Login successfully'
+            }
+        }
 
-        // stage('Build Docker Image')
-        // {
-        //     steps
-        //     {
-        //         sh 'docker build -t ${IMAGE_TAG} .'
-        //         echo "Docker image build successfully"
-        //         sh 'docker image ls'
+        stage('Build Docker Image')
+        {
+            steps
+            {
+                sh 'docker build -t ${IMAGE_TAG} .'
+                echo "Docker image build successfully"
+                sh 'docker image ls'
                 
-        //     }
-        // }
+            }
+        }
 
-        // stage('Push Docker Image')
-        // {
-        //     steps
-        //     {
-        //         sh 'docker push ${IMAGE_TAG}'
-        //         echo "Docker image push successfully"
-        //     }
-        // }
+        stage('Push Docker Image')
+        {
+            steps
+            {
+                sh 'docker push ${IMAGE_TAG}'
+                echo "Docker image push successfully"
+            }
+        }
 
-        // stage('Deploy to Staging')
-        // {
-        //     steps {
-        //         sh 'kubectl config use-context user@staging.us-east-1.eksctl.io'
-        //         sh 'kubectl config current-context'
-        //         sh "kubectl set image deployment/flask-app flask-app=${IMAGE_TAG}"
-        //     }
-        // }
+        stage('Deploy to Staging')
+        {
+            steps {
+                sh "sed -i 's/IMAGE_NAME/${IMAGE_TAG}/g' k8s/deployment.yaml"
+                sh 'kubectl apply -f /k8s/deployment.yaml -n ${NAME_SPACE}'
+                sh 'kubectl apply -f /k8s/service.yaml -n ${NAME_SPACE}'
+            }
+        }
 
         // stage('Acceptance Test')
         // {
