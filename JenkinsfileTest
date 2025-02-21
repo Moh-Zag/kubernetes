@@ -67,8 +67,8 @@ pipeline {
             steps {
                 sh "sed -i 's/IMAGE_NAME/${APP_NAME}/g' k8s/deployment.yaml"
                 sh "sed -i 's/VERSION/${env.BUILD_NUMBER}/g' k8s/deployment.yaml"
-                sh 'kubectl apply -f /k8s/deployment.yaml -n ${NAME_SPACE}'
-                sh 'kubectl apply -f /k8s/service.yaml -n ${NAME_SPACE}'
+                sh 'kubectl apply -f k8s/deployment.yaml -n ${NAME_SPACE}'
+                sh 'kubectl apply -f k8s/service.yaml -n ${NAME_SPACE}'
             }
         }
 
