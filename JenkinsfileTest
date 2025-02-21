@@ -5,6 +5,7 @@ pipeline {
         IMAGE_NAME = 'mohzag/jenkins-flask-app'
         IMAGE_TAG = "${IMAGE_NAME}:${env.BUILD_NUMBER}"
         KUBECONFIG = credentials('vas-kubeconfig')
+        NAME_SPACE = 'flux-app'
         // AWS_ACCESS_KEY_ID = credentials('aws-access-key')
         // AWS_SECRET_ACCESS_KEY = credentials('aws-secret-key')
         
@@ -21,7 +22,7 @@ pipeline {
                 sh 'kubectl get ns'
                 sh 'kubectl get nodes'
                 sh 'chmod +x createNameSpace.sh'
-                sh './createNameSpace.sh flux-app'
+                sh './createNameSpace.sh ${NAME_SPACE}'
                 // sh "pip install -r requirements.txt"
             }
         }
