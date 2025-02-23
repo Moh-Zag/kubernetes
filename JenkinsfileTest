@@ -36,8 +36,11 @@ pipeline {
             }
             }
             steps {
-                sh "pip install --upgrade pip"
-                sh "pip install -r requirements.txt"
+                sh '''
+                mkdir -p .pip-cache 
+                pip install --upgrade pip --cache-dir .pip-cache
+                pip install -r requirements.txt --cache-dir .pip-cache
+                '''
             }
         }
 
