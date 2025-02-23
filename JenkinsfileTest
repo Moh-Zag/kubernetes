@@ -25,9 +25,21 @@ pipeline {
                 sh 'kubectl get nodes'
                 sh 'chmod +x createNameSpace.sh'
                 sh './createNameSpace.sh ${NAME_SPACE}'
+                
+            }
+        }
+
+        stage('Install Python PIP') {
+            agent { docker { image 'python:3.12.0b3-alpine3.18'
+    
+                label 'docker-on-vas'
+            }
+            }
+            steps {
                 sh "pip install -r requirements.txt"
             }
         }
+
         stage('Test') {
             steps {
                 sh "pytest"
