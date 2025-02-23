@@ -39,8 +39,10 @@ pipeline {
                 sh '''
                 python3 -m venv .venv
                 source .venv/bin/activate
-                pip install --upgrade pip 
-                pip install -r requirements.txt
+                mkdir -p .pip-cache
+                chmod +w .pip-cache
+                pip install --upgrade pip --cache-dir .pip-cache
+                pip install -r requirements.txt --cache-dir .pip-cache
                 '''
             }
         }
