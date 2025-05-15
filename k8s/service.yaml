@@ -4,7 +4,6 @@ metadata:
   name: flask-app-service
 spec:
   type: LoadBalancer
-  loadBalancerIP: 10.34.10.32
   selector:
     app: flask-app
   ports:
